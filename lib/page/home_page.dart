@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:spotflod/page/prediction_page.dart';
-import 'package:tflite/tflite.dart';
 
 import '../data/diseases.dart';
 import 'about_page.dart';
@@ -20,6 +19,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  static const platform = MethodChannel('classifier');
+
   late ImagePicker imagePicker;
   String? imageFile;
   final textController = TextEditingController();
@@ -72,35 +73,19 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> classifyImage() async {
-    await Tflite.runModelOnImage(
-      path: File(imageFile!).path,
-      imageMean: 0.0,
-      imageStd: 1.0,
-      numResults: 1,
-      threshold: 0.5,
-      asynch: true,
-    ).then((response) {
-      Tflite.close();
+    await platform.invokeMethod('classifyImage',{"path":imageFile!}).then((response) {
+
       List<String> controlMeasures =
-          Diseases.getControlMeasures(response![0]['label']!);
+          Diseases.getControlMeasures(response['label']!);
 
       Navigator.push(context, MaterialPageRoute(builder: (context) {
         return PredictionPage(
           file: imageFile!,
           controlMeasures: controlMeasures,
-          classLabelIndex: response[0]['index']!,
+          classLabelIndex: response['index'],
         );
       }));
     });
-  }
-
-  Future<void> loadModel() async {
-    await Tflite.loadModel(
-        model: "assets/cnn_model/model.tflite",
-        labels: "assets/cnn_model/labels.txt",
-        numThreads: 1,
-        isAsset: true,
-        useGpuDelegate: false);
   }
 
   void lockPortrait() {
@@ -167,7 +152,6 @@ class _HomePageState extends State<HomePage> {
                       radius: 16,
                       borderRadius: BorderRadius.circular(32),
                       onTap: () async {
-                        await loadModel();
                         await pickImage(camera: true);
                         classifyImage();
                       },
@@ -184,7 +168,6 @@ class _HomePageState extends State<HomePage> {
                       alignment: Alignment.centerRight,
                       child: IconButton(
                         onPressed: () async {
-                          await loadModel();
                           await pickImage();
                           classifyImage();
                         },
