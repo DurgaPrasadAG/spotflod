@@ -81,7 +81,7 @@ class _AboutPageState extends State<AboutPage> {
 
   projectTitleWidget() {
     return const _AboutCardWidget(widgets: [
-      _AboutCardTitleWidget(text: 'Cotton Leaf Disease Detection System')
+      _AboutCardTitleWidget(text: 'Cotton Leaf Disease Detection')
     ]);
   }
 

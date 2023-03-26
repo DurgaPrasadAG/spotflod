@@ -1,12 +1,20 @@
 import 'package:flutter/material.dart';
 
 class FabWidget extends StatelessWidget {
-  const FabWidget({Key? key}) : super(key: key);
+  const FabWidget({Key? key, this.fun}) : super(key: key);
+  final Function? fun;
 
   @override
   Widget build(BuildContext context) {
     return FloatingActionButton.small(
-      onPressed: () => Navigator.of(context).pop(),
+      onPressed: () async {
+        if (fun != null){
+          await fun!();
+        }
+        if (context.mounted) {
+          Navigator.of(context).pop();
+        }
+      },
       backgroundColor: Colors.white24,
       elevation: 0,
       tooltip: 'Back',

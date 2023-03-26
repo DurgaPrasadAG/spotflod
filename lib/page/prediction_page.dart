@@ -37,8 +37,7 @@ class _PredictionPageState extends State<PredictionPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-          String cachePath = await platform.invokeMethod('cacheDir');
-          Directory(cachePath).deleteSync(recursive: true);
+          await deleteCache();
           return true;
       },
       child: Scaffold(
@@ -59,7 +58,11 @@ class _PredictionPageState extends State<PredictionPage> {
             ],
           ),
         )),
-        floatingActionButton: const FabWidget(),
+        floatingActionButton: FabWidget(
+          fun: () async {
+            await deleteCache();
+          },
+        ),
       ),
     );
   }
@@ -120,5 +123,10 @@ class _PredictionPageState extends State<PredictionPage> {
         ),
       ),
     );
+  }
+
+  Future<void> deleteCache() async {
+    String cachePath = await platform.invokeMethod('cacheDir');
+    Directory(cachePath).deleteSync(recursive: true);
   }
 }
