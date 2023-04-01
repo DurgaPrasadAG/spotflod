@@ -1,69 +1,57 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:spotflod/components/fab_widget.dart';
+import 'package:spotflod/data/constants.dart';
 
 import '../components/text_widget.dart';
+import '../data/diseases.dart';
 
-class PredictionPage extends StatefulWidget {
+class PredictionPage extends StatelessWidget {
   const PredictionPage(
-      {Key? key, this.file, this.controlMeasures, this.classLabelIndex})
+      {Key? key,
+      this.imagePath,
+      this.controlMeasures,
+      this.classLabelIndex,
+      this.information, this.classLabel})
       : super(key: key);
   static const id = '/predication_page';
-  final String? file;
+  final String? imagePath;
   final List<String>? controlMeasures;
   final int? classLabelIndex;
-
-  @override
-  State<PredictionPage> createState() => _PredictionPageState();
-}
-
-class _PredictionPageState extends State<PredictionPage> {
-  static const platform = MethodChannel('classifier');
-
-  List<String> classLabels = [
-    'Aphids',
-    'Army worm',
-    'Bacterial Blight',
-    'Curl Virus',
-    'Fusarium wilt',
-    'Healthy',
-    'Powdery mildew',
-    'Target spot'
-  ];
-
+  final String? information;
+  final String? classLabel;
+  
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-          await deleteCache();
-          return true;
-      },
-      child: Scaffold(
-        backgroundColor: const Color(0XFFdbe7c8),
-        body: SafeArea(
-            child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+    final dp = MediaQuery.of(context).devicePixelRatio;
+
+    return Scaffold(
+      body: SafeArea(
+          child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Expanded(
+                flex: dp > 2.75 ? 4 : 3,
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [image(), diseaseName()])),
+            if (classLabelIndex! != 5)
               Expanded(
-                  flex: 3,
-                  child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [image(), diseaseName()])),
-              if (widget.classLabelIndex! != 5)
-                Expanded(flex: 8, child: remedies()),
-            ],
-          ),
-        )),
-        floatingActionButton: FabWidget(
-          fun: () async {
-            await deleteCache();
-          },
+                flex: 8,
+                child: controlMeasures != null
+                    ? remedies(dp)
+                    : showInformation(dp),
+              ),
+          ],
         ),
-      ),
+      )),
+      floatingActionButton: const FabWidget(),
+
+      resizeToAvoidBottomInset: false,
+      bottomNavigationBar: information != null ? controlMeasuresButton(context) : null,
     );
   }
 
@@ -71,7 +59,7 @@ class _PredictionPageState extends State<PredictionPage> {
     return ClipRRect(
       borderRadius: BorderRadius.circular(16),
       child: Image.file(
-        File(widget.file!),
+        File(imagePath!),
         height: 150,
         width: 150,
       ),
@@ -84,18 +72,21 @@ class _PredictionPageState extends State<PredictionPage> {
       children: [
         Center(
           child: TextWidget(
-            classLabels[widget.classLabelIndex!],
-            fontSize: 22,
+            Constants.classLabels[classLabelIndex!],
+            fontSize: 20,
             onBlueBg: false,
           ),
         ),
-        if (widget.classLabelIndex! != 5)
-          const TextWidget('Control Measures', fontSize: 22, onBlueBg: false)
+        if (classLabelIndex! != 5)
+          TextWidget(
+              controlMeasures != null ? 'Control Measures' : 'Information',
+              fontSize: 20,
+              onBlueBg: false)
       ],
     );
   }
 
-  remedies() {
+  remedies(double dp) {
     return Card(
       color: const Color(0XFFe1e4d5),
       child: SingleChildScrollView(
@@ -106,13 +97,13 @@ class _PredictionPageState extends State<PredictionPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: List.generate(
-                  widget.controlMeasures!.length,
+                  controlMeasures!.length,
                   (index) => Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextWidget(
-                      '* ${widget.controlMeasures![index]}',
+                      '* ${controlMeasures![index]}',
                       textAlign: TextAlign.left,
-                      fontSize: 20,
+                      fontSize: dp > 2.75 ? 18 : 20,
                       onBlueBg: false,
                     ),
                   ),
@@ -125,8 +116,45 @@ class _PredictionPageState extends State<PredictionPage> {
     );
   }
 
-  Future<void> deleteCache() async {
-    String cachePath = await platform.invokeMethod('cacheDir');
-    Directory(cachePath).deleteSync(recursive: true);
+  showInformation(double dp) {
+    return Card(
+      color: const Color(0XFFe1e4d5),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SingleChildScrollView(
+          child: TextWidget(information!,
+              textAlign: TextAlign.left,
+              fontSize: dp > 2.75 ? 18 : 20,
+              onBlueBg: false),
+        ),
+      ),
+    );
+  }
+
+  controlMeasuresButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Card(
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: () {
+            List<String> controlMeasures = Diseases.getControlMeasures(classLabel!);
+
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return PredictionPage(
+                imagePath: imagePath!,
+                classLabelIndex: classLabelIndex,
+                controlMeasures: controlMeasures,
+              );
+            }));
+          },
+          child: const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: TextWidget('Show Control Measures',
+                fontSize: 22, textAlign: TextAlign.center),
+          ),
+        ),
+      ),
+    );
   }
 }

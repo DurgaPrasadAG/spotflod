@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:spotflod/data/constants.dart';
 
 class TextWidget extends StatelessWidget {
   const TextWidget(this.text,
@@ -17,10 +18,12 @@ class TextWidget extends StatelessWidget {
     return Text(
       text,
       style: TextStyle(
-        color: onBlueBg ? const Color(0XFF386664) : const Color(0XFF57624a),
+        color:
+            onBlueBg ? Constants.colorScheme.tertiary : const Color(0XFF57624a),
         fontSize: fontSize,
       ),
       textAlign: textAlign,
+      textScaleFactor: 1,
     );
   }
 }

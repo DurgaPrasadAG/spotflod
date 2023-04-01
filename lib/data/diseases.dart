@@ -8,7 +8,7 @@ import 'package:spotflod/data/target_spot_data.dart';
 
 class Diseases {
 
-  static getControlMeasures(String classLabel) {
+  static List<String> getControlMeasures(String classLabel) {
     List<String> controlMeasures = [];
 
     switch (classLabel) {
@@ -35,5 +35,34 @@ class Diseases {
         break;
     }
     return controlMeasures;
+  }
+
+  static String getInformation(String classLabel) {
+    String information = '';
+
+    switch (classLabel) {
+      case "aphids":
+        information = AphidsData.information;
+        break;
+      case 'army_worm':
+        information = ArmyWormData.information;
+        break;
+      case 'bacterial_blight':
+        information = BacterialBlightData.information;
+        break;
+      case 'curl_virus':
+        information = CurlVirusData.information;
+        break;
+      case 'fusarium_wilt':
+        information = FusariumWilt.information;
+        break;
+      case 'powdery_mildew':
+        information = PowderyMildew.information;
+        break;
+      case 'target_spot':
+        information = TargetSpotData.information;
+        break;
+    }
+    return information;
   }
 }

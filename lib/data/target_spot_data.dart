@@ -15,4 +15,11 @@ class TargetSpotData{
         "it creates conditions favorable for fungal growth."
         "Drip irrigation or other forms of targeted irrigation are recommended."
   ];
+
+  static const String information = """
+  Target spot is a fungal disease that can affect cotton plants. When target spot infects cotton leaves, it can cause a variety of symptoms, including:
+1.	Circular spots with a brown center and yellow halo: The primary symptom of target spot is the appearance of circular spots on the leaves of cotton plants. These spots have a brown center and a yellow halo, which gives them a distinctive "target-like" appearance.
+2.	Leaf defoliation: In severe cases, target spot can cause the leaves of cotton plants to turn yellow and drop prematurely, which can reduce the overall yield of the plant.
+3.	Reduced photosynthesis: Target spot can reduce the plant's ability to photosynthesize, which can result in reduced growth and yield.
+4.	Boll rot: In some cases, target spot can also infect the bolls of cotton plants, causing them to rot and reducing the quality of the cotton produced.""";
 }

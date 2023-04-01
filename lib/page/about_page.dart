@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:spotflod/components/fab_widget.dart';
 import 'package:spotflod/components/text_widget.dart';
+import 'package:spotflod/data/constants.dart';
 
 class AboutPage extends StatefulWidget {
   const AboutPage({Key? key}) : super(key: key);
@@ -11,6 +12,8 @@ class AboutPage extends StatefulWidget {
 }
 
 class _AboutPageState extends State<AboutPage> {
+  double? dp;
+
   List<String> fetchNames = ['amogh', 'irshad', 'sabeer', 'dp'];
   List<List<String>> projectMembers = [
     ['Amogh N', '3BR19CS008'],
@@ -21,6 +24,8 @@ class _AboutPageState extends State<AboutPage> {
 
   @override
   Widget build(BuildContext context) {
+    dp = MediaQuery.of(context).devicePixelRatio;
+    print(dp);
     return Scaffold(
       backgroundColor: const Color(0XFFdbe7c8),
       body: SafeArea(
@@ -30,12 +35,13 @@ class _AboutPageState extends State<AboutPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const TextWidget('About', fontSize: 32, onBlueBg: false),
+                TextWidget('About',
+                    fontSize: dp! > 3 ? 24 : 32, onBlueBg: false),
                 projectTitleWidget(),
                 projectMembersWidget(),
                 projectGuideWidget(),
-                copyrightWidget(),
-                openSourceLicensesWidget(),
+                collegeNameWidget(),
+                aboutApp()
               ],
             ),
           ),
@@ -48,12 +54,11 @@ class _AboutPageState extends State<AboutPage> {
   gridImages() {
     return GridView.count(
       crossAxisCount: 2,
-      childAspectRatio: 0.78,
+      childAspectRatio: dp! > 3 ? 0.78 : 0.9,
       shrinkWrap: true,
       children: List.generate(4, (index) {
         return Card(
           elevation: 0,
-          color: const Color(0XFFbbece8),
           child: Column(
             children: [
               Padding(
@@ -61,17 +66,20 @@ class _AboutPageState extends State<AboutPage> {
                 child: ClipOval(
                   child: Image.asset(
                     "assets/images/project-members/${fetchNames[index]}.jpg",
-                    height: 150,
-                    width: 150,
+                    height: dp! > 2.5 ? 100 : 150,
+                    width: dp! > 2.5 ? 100 : 150,
                   ),
                 ),
               ),
               TextWidget(
                 projectMembers[index][0],
-                fontSize: 16,
+                fontSize: dp! > 3 ? 14 : 16,
                 textAlign: TextAlign.center,
               ),
-              TextWidget(projectMembers[index][1], textAlign: TextAlign.center,)
+              TextWidget(
+                projectMembers[index][1],
+                textAlign: TextAlign.center,
+              )
             ],
           ),
         );
@@ -101,13 +109,20 @@ class _AboutPageState extends State<AboutPage> {
           color: const Color(0XFFbbece8),
           child: Column(
             children: const [
-              TextWidget('Dr. Aradhana D', fontSize: 18),
+              TextWidget('Dr. Aradhana D', fontSize: 16),
               TextWidget('Professor - Dept of CS&E.'),
             ],
           ),
         ),
       ],
     );
+  }
+
+  collegeNameWidget() {
+    return const _AboutCardWidget(widgets: [
+      _AboutCardTitleWidget(
+          text: 'Ballari Institute of Technology and Management')
+    ]);
   }
 
   copyrightWidget() {
@@ -124,12 +139,21 @@ class _AboutPageState extends State<AboutPage> {
         showLicensePage(context: context);
       },
       style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(const Color(0XFFe1e4d5))),
-      child: const TextWidget(
-        'Open Source Licenses',
-        onBlueBg: false,
-      ),
+          backgroundColor: MaterialStateProperty.all(
+              Constants.colorScheme.tertiaryContainer)),
+      child: const TextWidget('Open Source Licenses'),
     );
+  }
+
+  aboutApp() {
+    return _AboutCardWidget(widgets: [
+      Card(
+        elevation: 0,
+        child: Column(
+          children: [copyrightWidget(), openSourceLicensesWidget()],
+        ),
+      )
+    ]);
   }
 }
 
@@ -156,7 +180,6 @@ class _AboutCardWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 8,
-      color: const Color(0XFFbbece8),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(

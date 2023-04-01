@@ -1,5 +1,5 @@
 class ArmyWormData {
-  static final List<String> controlMeasures = [
+  static const List<String> controlMeasures = [
     "Look for larvae and signs of damage beginning in early spring. "
         "Caterpillars will often be found feeding on the undersides of leaves"
         " and new growth. Handpick the worms you discover and don’t be tempted"
@@ -20,4 +20,11 @@ class ArmyWormData {
         "cypermethrin. Avoid irrigating the area for 24 hours to allow maximum"
         " impact on armyworm.",
   ];
+
+  static const String information = """
+  Armyworms are caterpillars that can cause significant damage to cotton plants by feeding on the leaves, stems, and bolls of the plant. When armyworms feed on cotton leaves, they can cause a variety of symptoms, including:
+1.	Defoliation: Armyworms can strip the leaves of cotton plants, causing significant defoliation. This can reduce the plant's ability to photosynthesize and can ultimately reduce the yield and quality of the cotton produced.
+2.	Leaf damage: Armyworms can also damage cotton leaves by chewing irregular holes and notches in them. This can reduce the overall health of the plant and make it more susceptible to other pests and diseases.
+3.	Boll damage: In addition to feeding on leaves, armyworms can also feed on cotton bolls, causing significant damage and reducing the yield and quality of the cotton produced.
+4.	Secondary infections: Armyworm damage can create entry points for other pests and diseases, which can further damage the cotton plant.""";
 }
